@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/Stamgastenformulier/static/css/main.5fc4292a.css",
-    "main.js": "/Stamgastenformulier/static/js/main.ac14ec8a.js",
+    "main.css": "/Stamgastenformulier/static/css/main.6b93fa7d.css",
+    "main.js": "/Stamgastenformulier/static/js/main.d39d42fd.js",
     "static/js/453.4fbeb209.chunk.js": "/Stamgastenformulier/static/js/453.4fbeb209.chunk.js",
     "index.html": "/Stamgastenformulier/index.html",
-    "main.5fc4292a.css.map": "/Stamgastenformulier/static/css/main.5fc4292a.css.map",
-    "main.ac14ec8a.js.map": "/Stamgastenformulier/static/js/main.ac14ec8a.js.map",
+    "main.6b93fa7d.css.map": "/Stamgastenformulier/static/css/main.6b93fa7d.css.map",
+    "main.d39d42fd.js.map": "/Stamgastenformulier/static/js/main.d39d42fd.js.map",
     "453.4fbeb209.chunk.js.map": "/Stamgastenformulier/static/js/453.4fbeb209.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5fc4292a.css",
-    "static/js/main.ac14ec8a.js"
+    "static/css/main.6b93fa7d.css",
+    "static/js/main.d39d42fd.js"
   ]
 }
