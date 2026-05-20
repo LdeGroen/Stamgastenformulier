@@ -1,303 +1,351 @@
-import React, { useState, createContext, useContext } from 'react';
-// Correctie: De Appwrite SDK wordt nu als een lokaal pakket geïmporteerd.
-// Zorg ervoor dat je 'npm install appwrite' hebt uitgevoerd in je projectmap.
-import { Client, Databases, ID } from 'appwrite';
+﻿import React, { useState } from 'react';
+import { Client, Databases, ID } from './appwriteShim';
 
-// --- Appwrite Configuratie ---
+// --- Appwrite Instellingen (ongewijzigd) ---
 const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
 const APPWRITE_PROJECT_ID = '6874f0b40015fc341b14';
 const APPWRITE_DATABASE_ID = '68873afd0015cc5075e5';
 const APPWRITE_COLLECTION_STAMGAST_ID = '68a174c900178a2511e7';
+const TIKKIE_URL = 'https://tikkie.me/pay/CTF/ncomtUKWVk5WVWg75LE2Ln';
 
-// Initialiseer de Appwrite Client en Database
-const client = new Client()
-    .setEndpoint(APPWRITE_ENDPOINT)
-    .setProject(APPWRITE_PROJECT_ID);
+// --- Initialiseer Appwrite Client ---
+const client = new Client();
+client.setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
 const databases = new Databases(client);
 
-// --- Vertaaldata ---
+// --- Styling Constanten (ongewijzigd) ---
+const theme = {
+  primaryColor: 'text-[#20747f]',
+  accentColor: 'bg-orange-400 hover:bg-orange-500',
+  inputFocus: 'focus:ring-2 focus:ring-[#20747f] focus:border-transparent',
+};
+
+// --- Vertalingen Object (Aangepast voor nieuwe flow) ---
 const translations = {
-    nl: {
-        // Landing Page
-        becomeRegular: 'Word stamgast!',
-        supportPitch: 'Als Stamgast steun je het Café Theater Festival zodat er elk jaar weer een bijzonder programma samengesteld kan worden in cafés en andere horecazaken. Daarnaast draag je bij aan het ontwikkeltraject van de theatermakers. Als dank voor je steun en enthousiasme houden we je als eerste op de hoogte van alle ontwikkelingen.',
-        tier1_title: '€25 per jaar',
-        tier1_desc: 'Vanaf €25 per jaar ben je als eerste op de hoogte van al het Café Theater Festival nieuws via de mail én de Secret Stamgasten WhatsApp tijdens het festival.',
-        tier2_title: '€50 of €100 per jaar',
-        tier2_desc: 'Vanaf €50 per jaar ben je als eerste op de hoogte van het Café Theater Festival nieuws via de mail én de Secret Stamgasten WhatsApp tijdens het festival. Daarnaast nodigen we je uit voor de opening van het festival én krijg je persoonlijk kijkadvies van ons artistieke team!',
-        forCompanies_title: 'Bedrijf of organisatie?',
-        forCompanies_desc: 'Wil je als bedrijf het festival een warm hart toedragen? Dat kan! Neem contact op met ons via',
-        forCompanies_email: 'info@cafetheaterfestival.nl',
-        forCompanies_interest: 'als je hierin interesse hebt.',
-        taxBenefit_title: 'Belastingvoordeel',
-        taxBenefit_desc: 'Stichting Cafetheaterfestival heeft een culturele ANBI-status. Dit betekent dat je gift hierdoor voor 125% aftrekbaar kan zijn voor de belasting.',
-        taxBenefit_link: 'Meer info vind je hier',
-        // Form
-        formTitle: 'Stamgastenformulier',
-        goBack: 'Terug',
-        name: 'Naam',
-        email: 'E-mailadres',
-        phone: 'Telefoonnummer',
-        street: 'Straat',
-        houseNumber: 'Huisnummer',
-        postalCode: 'Postcode',
-        city: 'Stad',
-        iban: 'IBAN',
-        ibanName: 'IBAN op naam van',
-        contribution: 'Jaarlijkse bijdrage (€)',
-        authorization: 'Hierbij machtig ik het CTF jaarlijks mijn stamgastenbijdrage van mijn rekening af te schrijven.',
-        submitButton: 'Stamgast Worden & Betalen',
-        submitting: 'Bezig met versturen...',
-        // Messages
-        authError: 'Je moet akkoord gaan met de machtiging om door te gaan.',
-        successMsg: 'Bedankt! Je wordt nu doorgestuurd om de betaling te voltooien. Je ontvangt een bevestiging na betaling.',
-        errorMsg: 'Er is iets misgegaan. Probeer het later opnieuw of neem contact op.',
+  nl: {
+    landingPage: {
+      mainTitle: 'Word Stamgast!',
+      subtitle: 'Steun het festival en bezoek alle voorstellingen met je passe-partout',
+      intro: 'Word Stamgast van het CafÃ© Theater Festival en ontvang je festival passe-partout in de vorm van een exclusief speldje. Met het worden van Stamgast draag je direct bij aan het ontwikkeltraject van de deelnemende makers. Ook helpt het ons om ieder jaar weer een bijzonder programma samen te kunnen stellen. Stamgast worden kan vanaf â‚¬50,- per jaar (altijd opzegbaar). Let op: per Stamgast Ã©Ã©n exclusief speldje.',
+      tier2Title: 'â‚¬50 of meer per jaar',
+      tier2Desc: 'Vanaf â‚¬50 per jaar krijg je jaarlijks het speciale stamgasten-speldje. Dit speldje geldt als passe-partout voor het hele programma van het CTF dat jaar. Er wordt daardoor niet meer na de voorstelling van je verwacht dat je een donatie doet, jij doneert namelijk al aan het hele festival!',
+      ctaButton: 'Word stamgast!',
+      orgTitle: 'Bedrijf of organisatie?',
+      orgDesc: 'Wil je als bedrijf het festival een warm hart toedragen? Dat kan! Neem contact op met ons via',
+      taxTitle: 'Belastingvoordeel',
+      taxDesc: 'Stichting Cafetheaterfestival heeft een culturele ANBI-status. Dit betekent dat je gift hierdoor voor 125% aftrekbaar kan zijn voor de belasting.',
+      moreInfo: 'Meer info vind je hier.',
     },
-    en: {
-        // Landing Page
-        becomeRegular: 'Become a Regular!',
-        supportPitch: 'As a Regular, you support the Café Theater Festival, enabling a special program to be curated in cafes and other venues each year. You also contribute to the development of our theater makers. As a thank you for your support and enthusiasm, we will keep you informed of all developments first.',
-        tier1_title: '€25 per year',
-        tier1_desc: 'For €25 per year, you will be the first to know about all Café Theater Festival news via email and the Secret Regulars WhatsApp during the festival.',
-        tier2_title: '€50 or €100 per year',
-        tier2_desc: 'For €50 per year, you will be the first to know about all Café Theater Festival news via email and the Secret Regulars WhatsApp during the festival. We will also invite you to the festival opening and you will receive personal viewing advice from our artistic team!',
-        forCompanies_title: 'Company or organization?',
-        forCompanies_desc: 'Would you like to support the festival as a company? That\'s possible! Contact us at',
-        forCompanies_email: 'info@cafetheaterfestival.nl',
-        forCompanies_interest: 'if you are interested.',
-        taxBenefit_title: 'Tax Benefit',
-        taxBenefit_desc: 'The Cafetheaterfestival Foundation has a cultural ANBI status. This means your donation can be 125% tax-deductible.',
-        taxBenefit_link: 'More info can be found here',
-        // Form
-        formTitle: 'Regulars Form',
-        goBack: 'Back',
-        name: 'Name',
-        email: 'Email address',
-        phone: 'Phone number',
-        street: 'Street',
-        houseNumber: 'House number',
-        postalCode: 'Postal code',
-        city: 'City',
-        iban: 'IBAN',
-        ibanName: 'IBAN in the name of',
-        contribution: 'Annual contribution (€)',
-        authorization: 'I hereby authorize CTF to annually debit my regulars contribution from my account.',
-        submitButton: 'Become a Regular & Pay',
-        submitting: 'Submitting...',
-        // Messages
-        authError: 'You must agree to the authorization to proceed.',
-        successMsg: 'Thank you! You are now being redirected to complete the payment. You will receive a confirmation after payment.',
-        errorMsg: 'Something went wrong. Please try again later or contact us.',
+    form: {
+      mainTitle: 'Vul je gegevens in',
+      name: 'Naam',
+      email: 'E-mailadres',
+      phone: 'Telefoonnummer',
+      street: 'Straat',
+      houseNumber: 'Huisnummer',
+      postalCode: 'Postcode',
+      city: 'Stad',
+      iban: 'IBAN',
+      ibanName: 'IBAN op naam van',
+      amount: 'Bedrag per jaar (â‚¬)',
+      amountOption50: 'â‚¬ 50',
+      amountOptionCustom: 'Meer, namelijk...',
+      amountMinError: 'Vul een bedrag hoger dan â‚¬ 50 in.',
+      backButton: 'Terug',
+      amountPlaceholder: 'bv. 60',
+      authorization: 'Hierbij machtig ik het CTF jaarlijks dit bedrag af te schrijven van mijn rekening.',
+      submitButton: 'Word stamgast & betalen',
+      submitting: 'Verwerken...',
+      // Aangepaste teksten voor de nieuwe Success flow
+      successTitle: 'Aanmelding geslaagd!',
+      successDesc: 'Bedankt voor je aanmelding. Klik op de knop hieronder om je betaling via Tikkie te voldoen.',
+      manualPayButton: 'Betaal via Tikkie',
+      manualPayNote: '(Opent in een nieuw tabblad)',
+      error: 'Er is iets misgegaan. Probeer het opnieuw of neem contact op.',
     }
+  },
+  en: {
+    landingPage: {
+      mainTitle: 'Become a Stamgast!',
+      subtitle: 'Support the festival and attend all performances with a passe-partout',
+      intro: "Become a Stamgast of the CafÃ© Theater Festival and receive your festival pass in the form of an exclusive pin. By becoming a Stamgast, you contribute directly to the development of our performing artists. Your support also helps us curate a unique program every year. You can become a Stamgast from â‚¬50 per year (cancel anytime). Please note: you receive one exclusive pin per Stamgast.",
+      tier2Title: 'â‚¬50 or more per year',
+      tier2Desc: "Starting at â‚¬50 per year, you will receive the special Stamgast pin annually. This pin serves as a festival pass for the entire CTF program that year. This means you will not be expected to make a donation after the performances, because you are already supporting the festival as a whole!",
+      ctaButton: 'Become a Stamgast!',
+      orgTitle: 'Company or organization?',
+      orgDesc: 'Would your company like to support the festival? Thatâ€™s possible! Please contact us at',
+      taxTitle: 'Tax Benefit',
+      taxDesc: 'The Cafetheaterfestival Foundation has a cultural ANBI status in the Netherlands. This may mean that your donation is 125% tax-deductible.',
+      moreInfo: 'More info can be found here.',
+    },
+    form: {
+      mainTitle: 'Fill in your details',
+      name: 'Name',
+      email: 'Email address',
+      phone: 'Phone number',
+      street: 'Street',
+      houseNumber: 'House number',
+      postalCode: 'Postal code',
+      city: 'City',
+      iban: 'IBAN',
+      ibanName: 'IBAN in name of',
+      amount: 'Amount per year (â‚¬)',
+      amountOption50: 'â‚¬ 50',
+      amountOptionCustom: 'More, namely...',
+      amountMinError: 'Please enter an amount greater than â‚¬ 50.',
+      backButton: 'Back',
+      amountPlaceholder: 'e.g. 60',
+      authorization: 'I hereby authorize CTF to debit this amount from my account annually.',
+      submitButton: 'Become a Regular & Pay',
+      submitting: 'Processing...',
+      successTitle: 'Registration successful!',
+      successDesc: 'Thank you for signing up. Please click the button below to complete your payment via Tikkie.',
+      manualPayButton: 'Pay via Tikkie',
+      manualPayNote: '(Opens in a new tab)',
+      error: 'Something went wrong. Please try again or contact us.',
+    }
+  }
 };
 
-// --- Taal Context ---
-const LanguageContext = createContext();
-const useLang = () => useContext(LanguageContext);
+// --- De Componenten ---
 
-// --- Landingspagina Component ---
-const LandingPage = ({ onShowForm }) => {
-    const { t } = useLang();
+const LanguageSwitcher = ({ language, setLanguage }) => {
+  const activeClass = 'bg-[#20747f] text-white';
+  const inactiveClass = 'bg-gray-200 text-gray-700 hover:bg-gray-300';
+  
+  return (
+    <div className="absolute top-4 right-4 flex items-center bg-white rounded-lg p-1 shadow-md z-10">
+      <button 
+        onClick={() => setLanguage('nl')}
+        className={`px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'nl' ? activeClass : inactiveClass}`}
+      >
+        NL
+      </button>
+      <button 
+        onClick={() => setLanguage('en')}
+        className={`px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'en' ? activeClass : inactiveClass}`}
+      >
+        EN
+      </button>
+    </div>
+  );
+};
+
+const LandingPage = ({ content, onShowForm }) => (
+  <div>
+    <h1 className={`text-4xl md:text-5xl font-bold text-center mb-5 ${theme.primaryColor}`}>{content.mainTitle}</h1>
+    <p className="text-xl md:text-2xl text-center text-orange-400 mb-8 -mt-2 font-semibold">{content.subtitle}</p>
+    <p className="text-lg text-gray-700 mb-4">{content.intro}</p>
+    <h2 className={`text-2xl md:text-3xl font-bold border-b-2 border-gray-200 pb-3 mt-10 mb-5 ${theme.primaryColor}`}>{content.tier2Title}</h2>
+    <p className="text-lg text-gray-700">{content.tier2Desc}</p>
+    <button onClick={onShowForm} className={`w-full py-4 px-5 mt-8 text-lg font-bold text-white rounded-lg transition-all transform hover:-translate-y-0.5 ${theme.accentColor}`}>
+      {content.ctaButton}
+    </button>
+    <h2 className={`text-2xl md:text-3xl font-bold border-b-2 border-gray-200 pb-3 mt-10 mb-5 ${theme.primaryColor}`}>{content.orgTitle}</h2>
+    <p className="text-lg text-gray-700">{content.orgDesc} <a href="mailto:info@cafetheaterfestival.nl" className={`font-semibold hover:text-orange-500 ${theme.primaryColor}`}>info@cafetheaterfestival.nl</a></p>
+    <h3 className={`text-xl font-bold mt-8 mb-2 ${theme.primaryColor}`}>{content.taxTitle}</h3>
+    <p className="text-lg text-gray-700">{content.taxDesc} <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/aftrek-en-kortingen/content/gift-aftrekken" target="_blank" rel="noopener noreferrer" className={`font-semibold hover:text-orange-500 ${theme.primaryColor}`}>{content.moreInfo}</a></p>
+    <img src="https://media.cafetheaterfestival.nl/wp-content/uploads/2025/08/52042429455_e11fe1902e_o-copy-scaled-kopie.jpg" alt="Sfeerbeeld CafÃ© Theater Festival" className="w-full h-auto rounded-lg mt-8 shadow-md" />
+  </div>
+);
+
+// --- STAMGAST FORMULIER ---
+const StamgastForm = ({ content, onBack }) => {
+  const [formData, setFormData] = useState({
+    Name: '', Email: '', Phone: '', Straat: '', Huisnummer: '',
+    Postcode: '', Stad: '', IBAN: '', NaamIBAN: '',
+    Machtiging: false,
+  });
+  const [status, setStatus] = useState('idle');
+
+  const [amountOption, setAmountOption] = useState('50');
+  const [customAmount, setCustomAmount] = useState('');
+  const [amountError, setAmountError] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prevData => ({ ...prevData, [name]: type === 'checkbox' ? checked : value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setAmountError('');
+
+    let finalAmount;
+    if (amountOption === '50') {
+      finalAmount = 50;
+    } else {
+      finalAmount = parseInt(customAmount, 10);
+      if (isNaN(finalAmount) || finalAmount <= 50) {
+        setAmountError(content.amountMinError);
+        return;
+      }
+    }
+
+    setStatus('submitting');
+    try {
+      const mandaadID = Math.floor(1000 + Math.random() * 9000).toString();
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+      const sinceDate = `${day}-${month}-${year}`;
+      
+      const dataPayload = { 
+        ...formData, 
+        Bedrag: finalAmount,
+        MandaadID: mandaadID, 
+        Sinds: sinceDate 
+      };
+
+      await databases.createDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_STAMGAST_ID, ID.unique(), dataPayload);
+      
+      // We zetten de status direct op success.
+      // We doen GEEN automatische redirect meer, want dat wordt geblokkeerd door iframes.
+      setStatus('success');
+      
+    } catch (error) {
+      console.error('Appwrite Fout:', error);
+      setStatus('error');
+    }
+  };
+
+  if (status === 'success') {
     return (
-        <div className="bg-[#20747f] min-h-screen flex items-center justify-center p-4">
-            <div className="max-w-4xl w-full bg-white rounded-xl shadow-lg p-8 md:p-12 my-8">
-                <h1 className="text-4xl md:text-5xl font-bold text-ctf-green mb-4">{t.becomeRegular}</h1>
-                <p className="text-gray-600 mb-8 leading-relaxed">{t.supportPitch}</p>
-
-                <div className="space-y-8">
-                    <div>
-                        <h2 className="text-2xl font-semibold text-gray-800 border-b-2 border-ctf-green pb-2 mb-3">{t.tier1_title}</h2>
-                        <p className="text-gray-600">{t.tier1_desc}</p>
-                    </div>
-
-                    <div>
-                        <h2 className="text-2xl font-semibold text-gray-800 border-b-2 border-ctf-green pb-2 mb-3">{t.tier2_title}</h2>
-                        <p className="text-gray-600">{t.tier2_desc}</p>
-                    </div>
-                </div>
-
-                <button
-                    onClick={onShowForm}
-                    className="w-full mt-10 bg-ctf-green text-white font-bold py-4 px-6 rounded-lg text-lg hover:bg-ctf-dark-green transition-transform transform hover:scale-105 duration-300 focus:outline-none focus:ring-4 focus:ring-green-300"
-                >
-                    {t.becomeRegular}
-                </button>
-
-                <div className="mt-12 grid md:grid-cols-2 gap-8">
-                     <div>
-                        <h2 className="text-2xl font-semibold text-gray-800 border-b-2 border-ctf-green pb-2 mb-3">{t.forCompanies_title}</h2>
-                        <p className="text-gray-600">
-                            {t.forCompanies_desc} <a href={`mailto:${t.forCompanies_email}`} className="text-ctf-green font-semibold hover:underline">{t.forCompanies_email}</a> {t.forCompanies_interest}
-                        </p>
-                    </div>
-                     <div>
-                        <h2 className="text-2xl font-semibold text-gray-800 border-b-2 border-ctf-green pb-2 mb-3">{t.taxBenefit_title}</h2>
-                        <p className="text-gray-600">
-                            {t.taxBenefit_desc} <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/aftrek-en-kortingen/content/gift-aftrekken" target="_blank" rel="noopener noreferrer" className="text-ctf-green font-semibold hover:underline">{t.taxBenefit_link}</a>.
-                        </p>
-                    </div>
-                </div>
-
-                <img
-                    src="https://cafetheaterfestival.nl/wp-content/uploads/2024/12/52042429455_e11fe1902e_o-copy-scaled.jpg"
-                    alt="Festival sfeerbeeld"
-                    className="w-full mt-12 rounded-lg shadow-md"
-                    onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/1200x800/20747F/FFFFFF?text=Festival+Sfeer'; }}
-                />
-            </div>
-        </div>
+      <div className="p-6 mt-6 rounded-lg text-center bg-green-50 border border-green-200">
+        <h3 className="text-2xl font-bold text-green-700 mb-4">ðŸŽ‰ {content.successTitle}</h3>
+        <p className="text-gray-700 mb-8 text-lg">{content.successDesc}</p>
+        
+        {/* --- CRUCIALE WIJZIGING ---
+          target="_blank": Opent in nieuw tabblad. Dit werkt ALTIJD, ook in iframes.
+          rel="noopener noreferrer": Beveiliging.
+        */}
+        <a 
+          href={TIKKIE_URL} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-block py-4 px-8 bg-green-600 hover:bg-green-700 text-white font-bold text-xl rounded-lg shadow-lg transition-all transform hover:-translate-y-1"
+        >
+          {content.manualPayButton}
+        </a>
+        <p className="text-gray-500 text-sm mt-4">{content.manualPayNote}</p>
+      </div>
     );
-};
-
-
-// --- Stamgastenformulier Component ---
-const StamgastForm = ({ onBack }) => {
-    const { t } = useLang();
-    const [formData, setFormData] = useState({
-        Name: '', Email: '', Phone: '', Straat: '', Huisnummer: '', Postcode: '', Stad: '', IBAN: '', NaamIBAN: '', Bedrag: 25, Machtiging: false,
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [message, setMessage] = useState(null);
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setMessage(null);
-        if (!formData.Machtiging) {
-            setMessage({ type: 'error', text: t.authError });
-            return;
-        }
-        setIsSubmitting(true);
-
-        const mandaadID = Math.floor(1000 + Math.random() * 9000).toString();
-        const sinds = new Date().toLocaleDateString('nl-NL').replace(/\//g, '-');
-
-        try {
-            const documentData = {
-                ...formData,
-                Bedrag: parseInt(formData.Bedrag, 10),
-                MandaadID: mandaadID,
-                Sinds: sinds,
-            };
-            await databases.createDocument(
-                APPWRITE_DATABASE_ID,
-                APPWRITE_COLLECTION_STAMGAST_ID,
-                ID.unique(),
-                documentData
-            );
-            
-            // Toon succesbericht
-            setMessage({ type: 'success', text: t.successMsg });
-
-            // Open Tikkie in een nieuw tabblad
-            window.open('https://tikkie.me/pay/CTF/rPFwoJnu1xBT3t5JUeK8qg/25,50,100', '_blank');
-            
-            // Reset het formulier
-            setFormData({ Name: '', Email: '', Phone: '', Straat: '', Huisnummer: '', Postcode: '', Stad: '', IBAN: '', NaamIBAN: '', Bedrag: 25, Machtiging: false });
-
-        } catch (error) {
-            console.error("Fout bij het versturen naar Appwrite:", error);
-            setMessage({ type: 'error', text: t.errorMsg });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const FormInput = ({ label, id, ...props }) => (
-        <div className="mb-5">
-            <label htmlFor={id} className="block text-gray-700 text-sm font-bold mb-2">{label}</label>
-            <input id={id} {...props} className="shadow-sm appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-ctf-green" />
-        </div>
-    );
-
-    return (
-        <div className="relative min-h-screen bg-ctf-green flex items-center justify-center p-4">
-             <img
-                src="https://cafetheaterfestival.nl/wp-content/uploads/2025/06/Logo_Web_Trans_Zwart.png"
-                alt="Logo"
-                className="absolute top-5 right-5 w-36 h-auto hidden md:block"
-                onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/150x50/FFFFFF/000000?text=Logo'; }}
-            />
-            <div className="relative w-full max-w-2xl bg-white p-8 rounded-xl shadow-2xl my-8">
-                <button onClick={onBack} className="absolute top-4 left-4 text-gray-500 hover:text-gray-800">&larr; {t.goBack}</button>
-                <h1 className="text-3xl font-bold text-center text-ctf-green mb-6">{t.formTitle}</h1>
-                <form onSubmit={handleSubmit}>
-                    <FormInput label={t.name} id="Name" name="Name" type="text" value={formData.Name} onChange={handleChange} required />
-                    <FormInput label={t.email} id="Email" name="Email" type="email" value={formData.Email} onChange={handleChange} required />
-                    <FormInput label={t.phone} id="Phone" name="Phone" type="tel" value={formData.Phone} onChange={handleChange} required />
-                    
-                    <div className="md:flex md:gap-4">
-                        <div className="flex-grow"><FormInput label={t.street} id="Straat" name="Straat" type="text" value={formData.Straat} onChange={handleChange} required /></div>
-                        <div className="w-full md:w-1/3"><FormInput label={t.houseNumber} id="Huisnummer" name="Huisnummer" type="text" value={formData.Huisnummer} onChange={handleChange} required /></div>
-                    </div>
-                     <div className="md:flex md:gap-4">
-                        <div className="w-full md:w-1/3"><FormInput label={t.postalCode} id="Postcode" name="Postcode" type="text" value={formData.Postcode} onChange={handleChange} required /></div>
-                        <div className="flex-grow"><FormInput label={t.city} id="Stad" name="Stad" type="text" value={formData.Stad} onChange={handleChange} required /></div>
-                    </div>
-
-                    <FormInput label={t.iban} id="IBAN" name="IBAN" type="text" value={formData.IBAN} onChange={handleChange} required />
-                    <FormInput label={t.ibanName} id="NaamIBAN" name="NaamIBAN" type="text" value={formData.NaamIBAN} onChange={handleChange} required />
-                    <FormInput label={t.contribution} id="Bedrag" name="Bedrag" type="number" min="25" value={formData.Bedrag} onChange={handleChange} required />
-
-                    <div className="flex items-center my-6">
-                        <input type="checkbox" id="Machtiging" name="Machtiging" checked={formData.Machtiging} onChange={handleChange} required className="h-5 w-5 text-ctf-green rounded border-gray-300 focus:ring-ctf-green" />
-                        <label htmlFor="Machtiging" className="ml-3 text-sm text-gray-700">{t.authorization}</label>
-                    </div>
-
-                    <button type="submit" disabled={isSubmitting} className="w-full bg-ctf-dark-green text-white font-bold py-3 px-4 rounded-lg hover:bg-ctf-green focus:outline-none focus:ring-4 focus:ring-green-400 transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                        {isSubmitting ? t.submitting : t.submitButton}
-                    </button>
-                </form>
-                {message && (
-                    <div className={`mt-6 p-4 text-center rounded-md ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {message.text}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-};
-
-// --- Taalwisselaar Component ---
-const LanguageSwitcher = () => {
-    const { lang, setLang } = useLang();
-    
-    const toggleLang = () => {
-        setLang(lang === 'nl' ? 'en' : 'nl');
-    };
-
-    return (
-        <div className="fixed top-4 right-4 z-50">
-            <button 
-                onClick={toggleLang}
-                className="bg-white/80 backdrop-blur-sm text-ctf-dark-green font-semibold py-2 px-4 rounded-full shadow-md hover:bg-white transition-all duration-300"
-            >
-                {lang === 'nl' ? 'EN' : 'NL'}
-            </button>
-        </div>
-    );
-};
-
-
-// --- Hoofd App Component ---
-function App() {
-  const [view, setView] = useState('landing'); // 'landing' or 'form'
-  const [lang, setLang] = useState('nl'); // 'nl' or 'en'
-  const t = translations[lang];
+  }
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
-        <LanguageSwitcher />
-        {view === 'landing' ? (
-            <LandingPage onShowForm={() => setView('form')} />
+    <form onSubmit={handleSubmit} className="mt-8">
+      <h2 className={`text-3xl font-bold text-center mb-8 ${theme.primaryColor}`}>{content.mainTitle}</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <div className="md:col-span-2">
+            <label htmlFor="Name" className="block mb-2 font-semibold text-gray-600">{content.name}</label>
+            <input type="text" id="Name" name="Name" value={formData.Name} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} />
+        </div>
+        <div><label htmlFor="Email" className="block mb-2 font-semibold text-gray-600">{content.email}</label><input type="email" id="Email" name="Email" value={formData.Email} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
+        <div><label htmlFor="Phone" className="block mb-2 font-semibold text-gray-600">{content.phone}</label><input type="tel" id="Phone" name="Phone" value={formData.Phone} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
+        <div><label htmlFor="Straat" className="block mb-2 font-semibold text-gray-600">{content.street}</label><input type="text" id="Straat" name="Straat" value={formData.Straat} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
+        <div><label htmlFor="Huisnummer" className="block mb-2 font-semibold text-gray-600">{content.houseNumber}</label><input type="text" id="Huisnummer" name="Huisnummer" onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
+        <div><label htmlFor="Postcode" className="block mb-2 font-semibold text-gray-600">{content.postalCode}</label><input type="text" id="Postcode" name="Postcode" value={formData.Postcode} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
+        <div><label htmlFor="Stad" className="block mb-2 font-semibold text-gray-600">{content.city}</label><input type="text" id="Stad" name="Stad" value={formData.Stad} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
+        <div><label htmlFor="IBAN" className="block mb-2 font-semibold text-gray-600">{content.iban}</label><input type="text" id="IBAN" name="IBAN" value={formData.IBAN} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
+        <div><label htmlFor="NaamIBAN" className="block mb-2 font-semibold text-gray-600">{content.ibanName}</label><input type="text" id="NaamIBAN" name="NaamIBAN" value={formData.NaamIBAN} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
+        
+        <div className="md:col-span-2">
+          <label className="block mb-2 font-semibold text-gray-600">{content.amount}</label>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            <div className="flex items-center">
+              <input 
+                type="radio" 
+                id="amount50" 
+                name="amountOption" 
+                value="50"
+                checked={amountOption === '50'}
+                onChange={(e) => setAmountOption(e.target.value)}
+                className="h-5 w-5 text-[#20747f] focus:ring-[#20747f] focus:ring-2 border-gray-300"
+              />
+              <label htmlFor="amount50" className="ml-2 text-gray-700">{content.amountOption50}</label>
+            </div>
+            <div className="flex items-center">
+              <input 
+                type="radio" 
+                id="amountCustom" 
+                name="amountOption" 
+                value="custom"
+                checked={amountOption === 'custom'}
+                onChange={(e) => setAmountOption(e.target.value)}
+                className="h-5 w-5 text-[#20747f] focus:ring-[#20747f] focus:ring-2 border-gray-300"
+              />
+              <label htmlFor="amountCustom" className="ml-2 text-gray-700">{content.amountOptionCustom}</label>
+            </div>
+          </div>
+
+          {amountOption === 'custom' && (
+            <div className="mt-3 sm:ml-[2.25rem]">
+              <input 
+                type="number" 
+                id="customAmount" 
+                name="customAmount" 
+                value={customAmount} 
+                onChange={(e) => setCustomAmount(e.target.value)}
+                placeholder={content.amountPlaceholder} 
+                min="51" 
+                required 
+                className={`w-full sm:w-1/2 p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`}
+              />
+              {amountError && <p className="text-red-500 text-sm mt-1">{amountError}</p>}
+            </div>
+          )}
+        </div>
+
+        <div className="md:col-span-2 flex items-center mt-4">
+            <input type="checkbox" id="Machtiging" name="Machtiging" checked={formData.Machtiging} onChange={handleChange} required className={`h-5 w-5 mr-3 rounded border-gray-300 focus:ring-transparent text-[#20747f]`} />
+            <label htmlFor="Machtiging" className="text-gray-600">{content.authorization}</label>
+        </div>
+      </div>
+
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
+        <button 
+          type="button" 
+          onClick={onBack} 
+          className="w-full sm:w-auto py-3 px-6 text-lg font-bold text-gray-700 bg-gray-200 rounded-lg transition-all hover:bg-gray-300 text-center"
+        >
+          {content.backButton}
+        </button>
+        <button 
+          type="submit" 
+          disabled={status === 'submitting'} 
+          className={`w-full sm:w-auto py-3 px-6 text-lg font-bold text-white rounded-lg transition-all transform hover:-translate-y-0.5 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none ${theme.accentColor}`}
+        >
+          {status === 'submitting' ? content.submitting : content.submitButton}
+        </button>
+      </div>
+      
+      {status === 'error' && <div className="p-4 mt-6 rounded-md text-center font-semibold text-white bg-red-500">{content.error}</div>}
+    </form>
+  );
+};
+
+// --- APP COMPONENT ---
+function App() {
+  const [showForm, setShowForm] = useState(false);
+  const [language, setLanguage] = useState('nl');
+
+  const content = translations[language];
+
+  return (
+    <div className="min-h-screen bg-[#20747f] font-sans flex items-start justify-center p-4 sm:p-6 md:p-10">
+      <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-6 sm:p-8 md:p-12 relative">
+        <LanguageSwitcher language={language} setLanguage={setLanguage} />
+        {!showForm ? (
+          <LandingPage content={content.landingPage} onShowForm={() => setShowForm(true)} />
         ) : (
-            <StamgastForm onBack={() => setView('landing')} />
+          <StamgastForm 
+            content={content.form} 
+            onBack={() => setShowForm(false)} 
+          />
         )}
-    </LanguageContext.Provider>
+      </div>
+    </div>
   );
 }
 
