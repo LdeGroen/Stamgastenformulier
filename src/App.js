@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Client, Databases, ID } from './appwriteShim';
 
 // --- Appwrite Instellingen (ongewijzigd) ---
@@ -26,9 +26,9 @@ const translations = {
     landingPage: {
       mainTitle: 'Word Stamgast!',
       subtitle: 'Steun het festival en bezoek alle voorstellingen met je passe-partout',
-      intro: 'Word Stamgast van het CafÃ© Theater Festival en ontvang je festival passe-partout in de vorm van een exclusief speldje. Met het worden van Stamgast draag je direct bij aan het ontwikkeltraject van de deelnemende makers. Ook helpt het ons om ieder jaar weer een bijzonder programma samen te kunnen stellen. Stamgast worden kan vanaf â‚¬50,- per jaar (altijd opzegbaar). Let op: per Stamgast Ã©Ã©n exclusief speldje.',
-      tier2Title: 'â‚¬50 of meer per jaar',
-      tier2Desc: 'Vanaf â‚¬50 per jaar krijg je jaarlijks het speciale stamgasten-speldje. Dit speldje geldt als passe-partout voor het hele programma van het CTF dat jaar. Er wordt daardoor niet meer na de voorstelling van je verwacht dat je een donatie doet, jij doneert namelijk al aan het hele festival!',
+      intro: 'Word Stamgast van het Café Theater Festival en ontvang je festival passe-partout in de vorm van een exclusief speldje. Met het worden van Stamgast draag je direct bij aan het ontwikkeltraject van de deelnemende makers. Ook helpt het ons om ieder jaar weer een bijzonder programma samen te kunnen stellen. Stamgast worden kan vanaf €50,- per jaar (altijd opzegbaar). Let op: per Stamgast één exclusief speldje.',
+      tier2Title: '€50 of meer per jaar',
+      tier2Desc: 'Vanaf €50 per jaar krijg je jaarlijks het speciale stamgasten-speldje. Dit speldje geldt als passe-partout voor het hele programma van het CTF dat jaar. Er wordt daardoor niet meer na de voorstelling van je verwacht dat je een donatie doet, jij doneert namelijk al aan het hele festival!',
       ctaButton: 'Word stamgast!',
       orgTitle: 'Bedrijf of organisatie?',
       orgDesc: 'Wil je als bedrijf het festival een warm hart toedragen? Dat kan! Neem contact op met ons via',
@@ -47,10 +47,10 @@ const translations = {
       city: 'Stad',
       iban: 'IBAN',
       ibanName: 'IBAN op naam van',
-      amount: 'Bedrag per jaar (â‚¬)',
-      amountOption50: 'â‚¬ 50',
+      amount: 'Bedrag per jaar (€)',
+      amountOption50: '€ 50',
       amountOptionCustom: 'Meer, namelijk...',
-      amountMinError: 'Vul een bedrag hoger dan â‚¬ 50 in.',
+      amountMinError: 'Vul een bedrag hoger dan € 50 in.',
       backButton: 'Terug',
       amountPlaceholder: 'bv. 60',
       authorization: 'Hierbij machtig ik het CTF jaarlijks dit bedrag af te schrijven van mijn rekening.',
@@ -68,12 +68,12 @@ const translations = {
     landingPage: {
       mainTitle: 'Become a Stamgast!',
       subtitle: 'Support the festival and attend all performances with a passe-partout',
-      intro: "Become a Stamgast of the CafÃ© Theater Festival and receive your festival pass in the form of an exclusive pin. By becoming a Stamgast, you contribute directly to the development of our performing artists. Your support also helps us curate a unique program every year. You can become a Stamgast from â‚¬50 per year (cancel anytime). Please note: you receive one exclusive pin per Stamgast.",
-      tier2Title: 'â‚¬50 or more per year',
-      tier2Desc: "Starting at â‚¬50 per year, you will receive the special Stamgast pin annually. This pin serves as a festival pass for the entire CTF program that year. This means you will not be expected to make a donation after the performances, because you are already supporting the festival as a whole!",
+      intro: "Become a Stamgast of the Café Theater Festival and receive your festival pass in the form of an exclusive pin. By becoming a Stamgast, you contribute directly to the development of our performing artists. Your support also helps us curate a unique program every year. You can become a Stamgast from €50 per year (cancel anytime). Please note: you receive one exclusive pin per Stamgast.",
+      tier2Title: '€50 or more per year',
+      tier2Desc: "Starting at €50 per year, you will receive the special Stamgast pin annually. This pin serves as a festival pass for the entire CTF program that year. This means you will not be expected to make a donation after the performances, because you are already supporting the festival as a whole!",
       ctaButton: 'Become a Stamgast!',
       orgTitle: 'Company or organization?',
-      orgDesc: 'Would your company like to support the festival? Thatâ€™s possible! Please contact us at',
+      orgDesc: 'Would your company like to support the festival? That’s possible! Please contact us at',
       taxTitle: 'Tax Benefit',
       taxDesc: 'The Cafetheaterfestival Foundation has a cultural ANBI status in the Netherlands. This may mean that your donation is 125% tax-deductible.',
       moreInfo: 'More info can be found here.',
@@ -89,10 +89,10 @@ const translations = {
       city: 'City',
       iban: 'IBAN',
       ibanName: 'IBAN in name of',
-      amount: 'Amount per year (â‚¬)',
-      amountOption50: 'â‚¬ 50',
+      amount: 'Amount per year (€)',
+      amountOption50: '€ 50',
       amountOptionCustom: 'More, namely...',
-      amountMinError: 'Please enter an amount greater than â‚¬ 50.',
+      amountMinError: 'Please enter an amount greater than € 50.',
       backButton: 'Back',
       amountPlaceholder: 'e.g. 60',
       authorization: 'I hereby authorize CTF to debit this amount from my account annually.',
@@ -145,7 +145,7 @@ const LandingPage = ({ content, onShowForm }) => (
     <p className="text-lg text-gray-700">{content.orgDesc} <a href="mailto:info@cafetheaterfestival.nl" className={`font-semibold hover:text-orange-500 ${theme.primaryColor}`}>info@cafetheaterfestival.nl</a></p>
     <h3 className={`text-xl font-bold mt-8 mb-2 ${theme.primaryColor}`}>{content.taxTitle}</h3>
     <p className="text-lg text-gray-700">{content.taxDesc} <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/aftrek-en-kortingen/content/gift-aftrekken" target="_blank" rel="noopener noreferrer" className={`font-semibold hover:text-orange-500 ${theme.primaryColor}`}>{content.moreInfo}</a></p>
-    <img src="https://media.cafetheaterfestival.nl/wp-content/uploads/2025/08/52042429455_e11fe1902e_o-copy-scaled-kopie.jpg" alt="Sfeerbeeld CafÃ© Theater Festival" className="w-full h-auto rounded-lg mt-8 shadow-md" />
+    <img src="https://media.cafetheaterfestival.nl/wp-content/uploads/2025/08/52042429455_e11fe1902e_o-copy-scaled-kopie.jpg" alt="Sfeerbeeld Café Theater Festival" className="w-full h-auto rounded-lg mt-8 shadow-md" />
   </div>
 );
 
@@ -213,7 +213,7 @@ const StamgastForm = ({ content, onBack }) => {
   if (status === 'success') {
     return (
       <div className="p-6 mt-6 rounded-lg text-center bg-green-50 border border-green-200">
-        <h3 className="text-2xl font-bold text-green-700 mb-4">ðŸŽ‰ {content.successTitle}</h3>
+        <h3 className="text-2xl font-bold text-green-700 mb-4">🎉 {content.successTitle}</h3>
         <p className="text-gray-700 mb-8 text-lg">{content.successDesc}</p>
         
         {/* --- CRUCIALE WIJZIGING ---
