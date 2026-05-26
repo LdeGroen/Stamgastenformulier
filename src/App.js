@@ -145,7 +145,7 @@ const LandingPage = ({ content, onShowForm }) => (
     <p className="text-lg text-gray-700">{content.orgDesc} <a href="mailto:info@cafetheaterfestival.nl" className={`font-semibold hover:text-orange-500 ${theme.primaryColor}`}>info@cafetheaterfestival.nl</a></p>
     <h3 className={`text-xl font-bold mt-8 mb-2 ${theme.primaryColor}`}>{content.taxTitle}</h3>
     <p className="text-lg text-gray-700">{content.taxDesc} <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/aftrek-en-kortingen/content/gift-aftrekken" target="_blank" rel="noopener noreferrer" className={`font-semibold hover:text-orange-500 ${theme.primaryColor}`}>{content.moreInfo}</a></p>
-    <img src="https://media.cafetheaterfestival.nl/wp-content/uploads/2025/08/52042429455_e11fe1902e_o-copy-scaled-kopie.jpg" alt="Sfeerbeeld Café Theater Festival" className="w-full h-auto rounded-lg mt-8 shadow-md" />
+    <img src="https://pub-36abfb48eca14eb8b366a0211191ef0e.r2.dev/legacy/52042429455_e11fe1902e_o-copy-scaled-kopie.jpg" alt="Sfeerbeeld Café Theater Festival" className="w-full h-auto rounded-lg mt-8 shadow-md" />
   </div>
 );
 
