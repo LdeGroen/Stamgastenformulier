@@ -54,6 +54,12 @@ const translations = {
       backButton: 'Terug',
       amountPlaceholder: 'bv. 60',
       authorization: 'Hierbij machtig ik het CTF jaarlijks dit bedrag af te schrijven van mijn rekening.',
+      privacyTitle: 'Zo gaan we met je gegevens om (AVG)',
+      privacyItems: [
+        'We bewaren alleen wat nodig is, en alleen zolang je stamgast bent: je rekeningnummer en naam om de jaarlijkse bijdrage af te schrijven, je adres om het stamgastenspeldje op te sturen, je e-mailadres voor stamgasten-updates en je telefoonnummer om belangrijke wijzigingen door te geven.',
+        'Meld je je af als stamgast? Dan verwijderen we je direct en volledig uit ons systeem. We bewaren geen gegevens na afmelding.',
+        'Afmelden of je gegevens inzien kan altijd via info@cafetheaterfestival.nl.',
+      ],
       submitButton: 'Word stamgast & betalen',
       submitting: 'Verwerken...',
       // Aangepaste teksten voor de nieuwe Success flow
@@ -96,6 +102,12 @@ const translations = {
       backButton: 'Back',
       amountPlaceholder: 'e.g. 60',
       authorization: 'I hereby authorize CTF to debit this amount from my account annually.',
+      privacyTitle: 'How we handle your data (GDPR)',
+      privacyItems: [
+        'We only store what is necessary, and only for as long as you are a Stamgast: your bank account number and name to collect the annual contribution, your address to send the Stamgast pin, your email address for Stamgast updates and your phone number to inform you of important changes.',
+        'If you cancel your Stamgast membership, we immediately and completely remove you from our system. We do not keep any data after cancellation.',
+        'You can cancel or request access to your data at any time via info@cafetheaterfestival.nl.',
+      ],
       submitButton: 'Become a Regular & Pay',
       submitting: 'Processing...',
       successTitle: 'Registration successful!',
@@ -295,6 +307,14 @@ const StamgastForm = ({ content, onBack }) => {
               {amountError && <p className="text-red-500 text-sm mt-1">{amountError}</p>}
             </div>
           )}
+        </div>
+
+        {/* AVG-databeleid: transparant wat we bewaren, waarvoor en hoe lang. */}
+        <div className="md:col-span-2 mt-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-700 mb-2">{content.privacyTitle}</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
+                {(content.privacyItems || []).map((item, i) => <li key={i}>{item}</li>)}
+            </ul>
         </div>
 
         <div className="md:col-span-2 flex items-center mt-4">
