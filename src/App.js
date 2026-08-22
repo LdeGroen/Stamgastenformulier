@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Client, Databases, ID } from 'ctf-ui/api';
+import Afmelden from './Afmelden';
 
 // --- Appwrite Instellingen (ongewijzigd) ---
 const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
@@ -351,6 +352,13 @@ function App() {
   const [language, setLanguage] = useState('nl');
 
   const content = translations[language];
+
+  // Afmelden loopt via een persoonlijke link uit de vooraankondigingsmail:
+  // /afmelden/<token>. Geen router in deze app, dus we kijken zelf naar het pad.
+  const afmeldToken = (window.location.pathname.match(/^\/afmelden\/([A-Za-z0-9]+)/) || [])[1];
+  if (afmeldToken) {
+    return <Afmelden token={afmeldToken} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#20747f] font-sans flex items-start justify-center p-4 sm:p-6 md:p-10">
