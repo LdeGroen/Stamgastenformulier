@@ -85,7 +85,7 @@ export default function Ophogen({ token }) {
                     Je bijdrage staat nu op <b>€ {klaar.bedrag} per jaar</b>.
                 </p>
                 <Regels rijen={[
-                    ['Gaat in', klaar.vanaf ? `bij de incasso van ${datumNet(klaar.vanaf)} of later` : 'bij je volgende bijdrage'],
+                    ['Gaat in', klaar.uitgesteld ? `vanaf de incasso van ${datumNet(klaar.vanaf)}` : 'bij je volgende bijdrage'],
                     ['Van rekening', gegevens.iban],
                     ['Kenmerk machtiging', gegevens.mandaat_id],
                 ]} />
@@ -127,7 +127,7 @@ export default function Ophogen({ token }) {
                     Je hebt je bijdrage al opgehoogd naar <b>€ {gegevens.in_de_wacht.bedrag} per jaar</b>.
                 </p>
                 <Regels rijen={[
-                    ['Gaat in', `bij de incasso van ${datumNet(gegevens.in_de_wacht.vanaf)} of later`],
+                    ['Gaat in', `vanaf de incasso van ${datumNet(gegevens.in_de_wacht.vanaf)}`],
                     ['Van rekening', gegevens.iban],
                 ]} />
                 <p className="text-sm text-gray-500">
@@ -230,7 +230,7 @@ export default function Ophogen({ token }) {
                     <Regels rijen={[
                         ['Van', `€ ${gegevens.huidig_bedrag} per jaar`],
                         ['Naar', `€ ${naarTekst(gekozenBedrag)} per jaar`],
-                        ['Gaat in', gegevens.ingaand ? `bij de incasso van ${datumNet(gegevens.ingaand)} of later` : 'bij je volgende bijdrage'],
+                        ['Gaat in', gegevens.uitgesteld ? `vanaf de incasso van ${datumNet(gegevens.ingaand)}` : 'bij je volgende bijdrage'],
                         ['Van rekening', gegevens.iban],
                         ['Kenmerk machtiging', gegevens.mandaat_id],
                     ]} />
