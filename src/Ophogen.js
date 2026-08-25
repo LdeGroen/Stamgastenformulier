@@ -89,9 +89,10 @@ export default function Ophogen({ token }) {
                     ['Van rekening', gegevens.iban],
                     ['Kenmerk machtiging', gegevens.mandaat_id],
                 ]} />
+                {/* Waar en wanneer je de pin ophaalt wisselt mee met het festival;
+                    die zin komt van de server, uit de actieve ophaallocatie. */}
                 <p className="text-gray-700">
-                    Je krijgt een <b>stamgastpin</b>. Die ligt voor je klaar bij het festivalkantoor —
-                    kom hem ophalen als je er bent.
+                    Je krijgt een <b>stamgastpin</b>. {gegevens.pickup_sentence}
                 </p>
                 <p className="text-sm text-gray-500">
                     Je krijgt hier ook een bevestiging van per mail. Klopt er iets niet? Mail ons via{' '}
