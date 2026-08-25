@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Client, Databases, ID } from 'ctf-ui/api';
 import Afmelden from './Afmelden';
+import Ophogen from './Ophogen';
 
 // --- Appwrite Instellingen (ongewijzigd) ---
 const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
@@ -358,6 +359,13 @@ function App() {
   const afmeldToken = (window.location.pathname.match(/^\/afmelden\/([A-Za-z0-9]+)/) || [])[1];
   if (afmeldToken) {
     return <Afmelden token={afmeldToken} />;
+  }
+
+  // Ophogen naar het bedrag waarvoor je een stamgastpin krijgt: /ophogen/<token>.
+  // Zelfde soort link als het afmelden.
+  const ophoogToken = (window.location.pathname.match(/^\/ophogen\/([A-Za-z0-9]+)/) || [])[1];
+  if (ophoogToken) {
+    return <Ophogen token={ophoogToken} />;
   }
 
   return (
