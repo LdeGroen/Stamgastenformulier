@@ -5,8 +5,8 @@
   "homepage": "https://stamgast.cafetheaterfestival.nl/",
   "dependencies": {
     "ctf-ui": "github:LdeGroen/ctf-ui#v0.1.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
