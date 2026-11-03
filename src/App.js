@@ -59,7 +59,7 @@ const translations = {
       privacyTitle: 'Zo gaan we met je gegevens om (AVG)',
       privacyItems: [
         'We bewaren alleen wat nodig is, en alleen zolang je stamgast bent: je rekeningnummer en naam om de jaarlijkse bijdrage af te schrijven, je adres om het stamgastenspeldje op te sturen, je e-mailadres voor stamgasten-updates en je telefoonnummer om belangrijke wijzigingen door te geven.',
-        'Meld je je af als stamgast? Dan verwijderen we je direct en volledig uit ons systeem. We bewaren geen gegevens na afmelding.',
+        'Meld je je af als stamgast? Dan verwijderen we je acht weken later volledig uit ons systeem. Die acht weken zijn nodig omdat een laatste afschrijving in die tijd nog teruggeboekt kan worden. Daarna bewaren we geen gegevens meer.',
         'Afmelden of je gegevens inzien kan altijd via info@cafetheaterfestival.nl.',
       ],
       submitButton: 'Word stamgast & betalen',
@@ -107,7 +107,7 @@ const translations = {
       privacyTitle: 'How we handle your data (GDPR)',
       privacyItems: [
         'We only store what is necessary, and only for as long as you are a Stamgast: your bank account number and name to collect the annual contribution, your address to send the Stamgast pin, your email address for Stamgast updates and your phone number to inform you of important changes.',
-        'If you cancel your Stamgast membership, we immediately and completely remove you from our system. We do not keep any data after cancellation.',
+        'If you cancel your Stamgast membership, we completely remove you from our system eight weeks later. We need those eight weeks because a final direct debit can still be reversed during that time. After that, we keep no data.',
         'You can cancel or request access to your data at any time via info@cafetheaterfestival.nl.',
       ],
       submitButton: 'Become a Regular & Pay',
