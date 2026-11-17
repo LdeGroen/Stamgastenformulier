@@ -2,6 +2,7 @@
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}", // Zorgt ervoor dat alle JS/JSX bestanden worden gescand
+    "./index.html",              // De HTML staat bij Vite in de hoofdmap
   ],
   theme: {
     extend: {
