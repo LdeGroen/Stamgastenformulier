@@ -1,19 +1,12 @@
 import React, { useState } from 'react';
-import { Client, Databases, ID } from 'ctf-ui/api';
 import Afmelden from './Afmelden';
 import Ophogen from './Ophogen';
+import Betaalstatus from './Betaalstatus';
 
-// --- Appwrite Instellingen (ongewijzigd) ---
-const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const APPWRITE_PROJECT_ID = '6874f0b40015fc341b14';
-const APPWRITE_DATABASE_ID = '68873afd0015cc5075e5';
-const APPWRITE_COLLECTION_STAMGAST_ID = '68a174c900178a2511e7';
-const TIKKIE_URL = 'https://tikkie.me/pay/CTF/ncomtUKWVk5WVWg75LE2Ln';
-
-// --- Initialiseer Appwrite Client ---
-const client = new Client();
-client.setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
-const databases = new Databases(client);
+// Aanmelden gaat sinds 18-11-2026 via een eigen route: die maakt een Tikkie
+// voor precies deze aanmelding, zodat de backend ziet of er betaald is en dan
+// de QR-code voor het speldje vrijgeeft. Zie App\Support\StamgastBetaling.
+const API_URL = 'https://backend.cafetheaterfestival.nl';
 
 // --- Styling Constanten (ongewijzigd) ---
 const theme = {
@@ -164,13 +157,14 @@ const LandingPage = ({ content, onShowForm }) => (
 );
 
 // --- STAMGAST FORMULIER ---
-const StamgastForm = ({ content, onBack }) => {
+const StamgastForm = ({ content, taal, onBack }) => {
   const [formData, setFormData] = useState({
     Name: '', Email: '', Phone: '', Straat: '', Huisnummer: '',
     Postcode: '', Stad: '', IBAN: '', NaamIBAN: '',
     Machtiging: false,
   });
   const [status, setStatus] = useState('idle');
+  const [aanmelding, setAanmelding] = useState(null);
 
   const [amountOption, setAmountOption] = useState('50');
   const [customAmount, setCustomAmount] = useState('');
@@ -212,39 +206,26 @@ const StamgastForm = ({ content, onBack }) => {
         Sinds: sinceDate 
       };
 
-      await databases.createDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_STAMGAST_ID, ID.unique(), dataPayload);
-      
-      // We zetten de status direct op success.
-      // We doen GEEN automatische redirect meer, want dat wordt geblokkeerd door iframes.
+      const res = await fetch(`${API_URL}/api/public/stamgast/aanmelden`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(dataPayload),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const d = await res.json();
+
+      // Geen automatische redirect naar Tikkie: dat blokkeert de iframe. De
+      // knop opent een nieuw tabblad, en hier wachten we op de betaling.
+      setAanmelding({ token: d.token, tikkieUrl: d.tikkie_url });
       setStatus('success');
-      
     } catch (error) {
-      console.error('Appwrite Fout:', error);
+      console.error('Aanmelden mislukt:', error);
       setStatus('error');
     }
   };
 
-  if (status === 'success') {
-    return (
-      <div className="p-6 mt-6 rounded-lg text-center bg-green-50 border border-green-200">
-        <h3 className="text-2xl font-bold text-green-700 mb-4">🎉 {content.successTitle}</h3>
-        <p className="text-gray-700 mb-8 text-lg">{content.successDesc}</p>
-        
-        {/* --- CRUCIALE WIJZIGING ---
-          target="_blank": Opent in nieuw tabblad. Dit werkt ALTIJD, ook in iframes.
-          rel="noopener noreferrer": Beveiliging.
-        */}
-        <a 
-          href={TIKKIE_URL} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-block py-4 px-8 bg-green-600 hover:bg-green-700 text-white font-bold text-xl rounded-lg shadow-lg transition-all transform hover:-translate-y-1"
-        >
-          {content.manualPayButton}
-        </a>
-        <p className="text-gray-500 text-sm mt-4">{content.manualPayNote}</p>
-      </div>
-    );
+  if (status === 'success' && aanmelding) {
+    return <Betaalstatus token={aanmelding.token} tikkieUrl={aanmelding.tikkieUrl} taal={taal} naAanmelding />;
   }
 
   return (
@@ -368,6 +349,20 @@ function App() {
     return <Ophogen token={ophoogToken} />;
   }
 
+  // De QR-code voor het speldje, en de stand van je betaling: /qr/<token>.
+  // Hier gaan de link uit de welkomstmail en de QR-code zelf naartoe.
+  const qrToken = (window.location.pathname.match(/^\/qr\/([A-Za-z0-9]+)/) || [])[1];
+  if (qrToken) {
+    return (
+      <div className="min-h-screen bg-[#20747f] font-sans flex items-start justify-center p-4 sm:p-6 md:p-10">
+        <div className="w-full max-w-xl bg-white rounded-xl shadow-2xl p-6 sm:p-8 relative">
+          <LanguageSwitcher language={language} setLanguage={setLanguage} />
+          <Betaalstatus token={qrToken} taal={language} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#20747f] font-sans flex items-start justify-center p-4 sm:p-6 md:p-10">
       <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-6 sm:p-8 md:p-12 relative">
@@ -375,10 +370,7 @@ function App() {
         {!showForm ? (
           <LandingPage content={content.landingPage} onShowForm={() => setShowForm(true)} />
         ) : (
-          <StamgastForm 
-            content={content.form} 
-            onBack={() => setShowForm(false)} 
-          />
+          <StamgastForm content={content.form} taal={language} onBack={() => setShowForm(false)} />
         )}
       </div>
     </div>
