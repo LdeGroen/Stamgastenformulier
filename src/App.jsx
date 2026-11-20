@@ -46,6 +46,8 @@ const translations = {
       amountOption50: '€ 50',
       amountOptionCustom: 'Meer, namelijk...',
       amountMinError: 'Vul een bedrag hoger dan € 50 in.',
+      amountMaxError: 'Het bedrag kan maximaal € 1.000 zijn.',
+      ibanError: 'Dit IBAN klopt niet. Kijk het nog even na.',
       backButton: 'Terug',
       amountPlaceholder: 'bv. 60',
       authorization: 'Hierbij machtig ik het CTF jaarlijks dit bedrag af te schrijven van mijn rekening.',
@@ -94,6 +96,8 @@ const translations = {
       amountOption50: '€ 50',
       amountOptionCustom: 'More, namely...',
       amountMinError: 'Please enter an amount greater than € 50.',
+      amountMaxError: 'The amount can be at most € 1,000.',
+      ibanError: 'This IBAN is not valid. Please check it.',
       backButton: 'Back',
       amountPlaceholder: 'e.g. 60',
       authorization: 'I hereby authorize CTF to debit this amount from my account annually.',
@@ -169,6 +173,7 @@ const StamgastForm = ({ content, taal, onBack }) => {
   const [amountOption, setAmountOption] = useState('50');
   const [customAmount, setCustomAmount] = useState('');
   const [amountError, setAmountError] = useState('');
+  const [ibanError, setIbanError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -178,6 +183,7 @@ const StamgastForm = ({ content, taal, onBack }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setAmountError('');
+    setIbanError('');
 
     let finalAmount;
     if (amountOption === '50') {
@@ -188,29 +194,27 @@ const StamgastForm = ({ content, taal, onBack }) => {
         setAmountError(content.amountMinError);
         return;
       }
+      if (finalAmount > 1000) {
+        setAmountError(content.amountMaxError);
+        return;
+      }
     }
 
     setStatus('submitting');
     try {
-      const mandaadID = Math.floor(1000 + Math.random() * 9000).toString();
-      const today = new Date();
-      const day = String(today.getDate()).padStart(2, '0');
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const year = today.getFullYear();
-      const sinceDate = `${day}-${month}-${year}`;
-      
-      const dataPayload = { 
-        ...formData, 
-        Bedrag: finalAmount,
-        MandaadID: mandaadID, 
-        Sinds: sinceDate 
-      };
+      // Mandaat-ID en ingangsdatum zet de server (audit FRM-11).
+      const dataPayload = { ...formData, Bedrag: finalAmount };
 
       const res = await fetch(`${API_URL}/api/public/stamgast/aanmelden`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(dataPayload),
       });
+      if (res.status === 422) {
+        const fouten = (await res.json().catch(() => ({}))).errors || {};
+        if (fouten.Bedrag) { setAmountError(content.amountMaxError); setStatus('idle'); return; }
+        if (fouten.IBAN) { setIbanError(content.ibanError); setStatus('idle'); return; }
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const d = await res.json();
 
@@ -242,7 +246,7 @@ const StamgastForm = ({ content, taal, onBack }) => {
         <div><label htmlFor="Huisnummer" className="block mb-2 font-semibold text-gray-600">{content.houseNumber}</label><input type="text" id="Huisnummer" name="Huisnummer" onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
         <div><label htmlFor="Postcode" className="block mb-2 font-semibold text-gray-600">{content.postalCode}</label><input type="text" id="Postcode" name="Postcode" value={formData.Postcode} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
         <div><label htmlFor="Stad" className="block mb-2 font-semibold text-gray-600">{content.city}</label><input type="text" id="Stad" name="Stad" value={formData.Stad} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
-        <div><label htmlFor="IBAN" className="block mb-2 font-semibold text-gray-600">{content.iban}</label><input type="text" id="IBAN" name="IBAN" value={formData.IBAN} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
+        <div><label htmlFor="IBAN" className="block mb-2 font-semibold text-gray-600">{content.iban}</label><input type="text" id="IBAN" name="IBAN" value={formData.IBAN} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} />{ibanError && <p className="text-red-500 text-sm mt-1">{ibanError}</p>}</div>
         <div><label htmlFor="NaamIBAN" className="block mb-2 font-semibold text-gray-600">{content.ibanName}</label><input type="text" id="NaamIBAN" name="NaamIBAN" value={formData.NaamIBAN} onChange={handleChange} required className={`w-full p-3 border border-gray-300 rounded-md transition ${theme.inputFocus}`} /></div>
         
         <div className="md:col-span-2">
