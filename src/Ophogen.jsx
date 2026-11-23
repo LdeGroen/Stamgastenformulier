@@ -11,7 +11,7 @@ import React, { useState, useEffect } from 'react';
 //
 // Verlagen kan hier niet. Minder gaan betalen is een gesprek en geen knop.
 
-const API_URL = 'https://backend.cafetheaterfestival.nl';
+import { API_URL } from 'ctf-ui/api';
 
 /** "50,00" → 50 */
 const naarGetal = (tekst) => Number(String(tekst || '0').replace(/\./g, '').replace(',', '.'));

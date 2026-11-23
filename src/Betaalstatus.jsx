@@ -11,7 +11,7 @@ import React, { useState, useEffect } from 'react';
 // De backend vraagt Tikkie zelf of er betaald is; deze pagina vraagt alleen
 // steeds de stand op. Ophalen per post? Dan geen QR-code.
 
-const API_URL = 'https://backend.cafetheaterfestival.nl';
+import { API_URL } from 'ctf-ui/api';
 const VASTE_TIKKIE = 'https://tikkie.me/pay/CTF/ncomtUKWVk5WVWg75LE2Ln';
 const ELKE_MS = 4000;
 const HOOGSTENS_MS = 45 * 60 * 1000;

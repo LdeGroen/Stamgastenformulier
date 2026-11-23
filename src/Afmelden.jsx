@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 // zelf. De reden is optioneel: niemand tegenhouden omdat hij niet wil uitleggen
 // waarom.
 
-const API_URL = 'https://backend.cafetheaterfestival.nl';
+import { API_URL } from 'ctf-ui/api';
 
 const REDENEN = [
     'Het past niet meer in mijn budget',

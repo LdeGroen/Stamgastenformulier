@@ -6,7 +6,7 @@ import Betaalstatus from './Betaalstatus';
 // Aanmelden gaat sinds 18-11-2026 via een eigen route: die maakt een Tikkie
 // voor precies deze aanmelding, zodat de backend ziet of er betaald is en dan
 // de QR-code voor het speldje vrijgeeft. Zie App\Support\StamgastBetaling.
-const API_URL = 'https://backend.cafetheaterfestival.nl';
+import { API_URL } from 'ctf-ui/api';
 
 // --- Styling Constanten (ongewijzigd) ---
 const theme = {
